@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "ts-node ./src/server.ts",
     "dev": "npx ts-node script.ts",
-    "predev":"prisma generate"
+    "predev": "prisma generate"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
     "prisma": "^5.2.0",
