@@ -5,10 +5,12 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
+import { log } from 'console';
 
 dotenv.config();
 
 const app: Express = express();
+app.use(express.json());
 const port = 3000;
 const INPUT_DIR = process.env.INPUT_DIR || "./input";
 const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
@@ -33,8 +35,11 @@ app.get('/process', expressAsyncHandler(async (req: Request, res: Response) => {
             .filter((file) => [".jpg", ".jpeg", ".png"].includes(path.extname(file))),
     };
     try {
-        await processImages(workerInput, INPUT_DIR, OUTPUT_DIR);
-        res.status(200).json({ message: 'Images processed successfully' });
+        let logs: any = await processImages(req, res, workerInput, INPUT_DIR, OUTPUT_DIR);
+        //console.log({"logs":logs})
+        res.status(200).json({ logs });
+        //console.log({"logs":logs})
+
     } catch (error) {
         res.status(500).json({ error: 'An error occurred' });
     }

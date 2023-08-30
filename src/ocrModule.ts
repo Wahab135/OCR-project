@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import Tesseract, { createWorker } from "tesseract.js";
+import { log } from "console";
 
 interface WorkerInput {
   inputDir: string;
@@ -15,9 +16,10 @@ interface WorkerInput {
 dotenv.config();
 
 const db = new PrismaClient();
+const processImages = async (req: Request, res: Response, workerInput: WorkerInput, INPUT_DIR: string, OUTPUT_DIR: string) => {
+    let logs: any = [];
 
-const processImages = async (workerInput: WorkerInput, INPUT_DIR: string, OUTPUT_DIR: string) => {
-    const worker = createWorker({
+    const logsArray = createWorker({
         langPath: path.join(__dirname, "..", "tesseract-data"),
     }).then(async (worker) => {
         await worker.loadLanguage("eng");
@@ -37,7 +39,7 @@ const processImages = async (workerInput: WorkerInput, INPUT_DIR: string, OUTPUT
                 });
 
                 if (fileExists) {
-                    console.log(`${file} has already been scanned`);
+                    logs.push(`${file} has already been scanned`);
                     continue;
                 }
 
@@ -48,7 +50,8 @@ const processImages = async (workerInput: WorkerInput, INPUT_DIR: string, OUTPUT
                 const matchedList = text.match(/\d{5}-?\d{7}-?\d{1}/g)?.map((data) => data.replace(/[- ]/g, ""));
 
                 if (!matchedList || matchedList.length === 0) {
-                    console.log(`${file} does not contain valid data`);
+                    logs.push(`${file} does not contain valid data`);
+
                     return;
                 }
 
@@ -70,26 +73,35 @@ const processImages = async (workerInput: WorkerInput, INPUT_DIR: string, OUTPUT
                         },
                     });
 
-                    console.log(`Inserted data from ${file}: ${matchedList}`);
+                    logs.push(`Inserted data from ${file}: ${matchedList}`)
+
 
                 }
             } catch (err) {
-                console.error(`Error processing file ${file}: ${err}`);
+                logs.push(`Error processing file ${file}: ${err}`)
+
             }
             processedCount++;
 
-            console.log(
+            
+            logs.push(
                 `Processed ${processedCount} files of Total ${workerInput.files.length}`
             );
+
         }
 
-        console.log(
+       
+        logs.push(
             ` Processed ${workerInput.files.length} files`
         );
 
         await worker.terminate();
         await db.$disconnect();
+        return logs;
+
     })
+
+    return logsArray;
 };
 
 export default processImages
