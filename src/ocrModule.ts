@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import express, { Express, Request, Response } from 'express';
 import crypto from "crypto";
 import dotenv from "dotenv";
 import fs from "fs";
@@ -14,18 +15,8 @@ interface WorkerInput {
 dotenv.config();
 
 const db = new PrismaClient();
-const INPUT_DIR = process.env.INPUT_DIR || "./input";
-const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
-const workerInput: WorkerInput = {
-  inputDir: INPUT_DIR,
-  outputDir: OUTPUT_DIR,
-  files: fs
-    .readdirSync(INPUT_DIR)
-    .filter((file) => [".jpg", ".jpeg", ".png"].includes(path.extname(file))),
-};
 
-
-const processImages = async (workerInput:WorkerInput, INPUT_DIR:string, OUTPUT_DIR:string) => {
+const processImages = async (workerInput: WorkerInput, INPUT_DIR: string, OUTPUT_DIR: string) => {
     const worker = createWorker({
         langPath: path.join(__dirname, "..", "tesseract-data"),
     }).then(async (worker) => {
@@ -80,6 +71,7 @@ const processImages = async (workerInput:WorkerInput, INPUT_DIR:string, OUTPUT_D
                     });
 
                     console.log(`Inserted data from ${file}: ${matchedList}`);
+
                 }
             } catch (err) {
                 console.error(`Error processing file ${file}: ${err}`);
