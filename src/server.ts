@@ -17,10 +17,6 @@ interface WorkerInput {
   outputDir: string;
   files: string[];
 }
-interface LogEntry {
-  file: string;
-  matchedList: string[];
-}
 const db = new PrismaClient();
 
 
