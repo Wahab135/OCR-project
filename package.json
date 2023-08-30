@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "ts-node ./src/server.ts",
+    "start": "ts-node-dev ./src/server.ts",
     "dev": "npx ts-node script.ts",
     "predev": "prisma generate"
   },
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.2.0",
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -23,6 +24,7 @@
     "prisma": "^5.2.0",
     "sqlite3": "^5.1.6",
     "tesseract.js": "^4.1.2",
+    "ts-node-dev": "^2.0.0",
     "tsx": "^3.12.7"
   },
   "devDependencies": {

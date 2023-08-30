@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from 'express';
+const cors = require("cors");
 import processImages from './ocrModule';
 import expressAsyncHandler from 'express-async-handler';
 import dotenv from "dotenv";
@@ -11,6 +12,7 @@ dotenv.config();
 
 const app: Express = express();
 app.use(express.json());
+app.use(cors());
 const port = 3005;
 const INPUT_DIR = process.env.INPUT_DIR || "./input";
 const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
@@ -26,14 +28,16 @@ app.get('/', (req: Request, res: Response)=>{
     res.send('Hello, this is Express + TypeScript');
 });
 
-app.get('/process', expressAsyncHandler(async (req: Request, res: Response) => {
+app.post('/process', expressAsyncHandler(async (req: Request, res: Response) => {
     const workerInput: WorkerInput = {
         inputDir: INPUT_DIR,
         outputDir: OUTPUT_DIR,
-        files: fs
+        /*files: fs
             .readdirSync(INPUT_DIR)
-            .filter((file) => [".jpg", ".jpeg", ".png"].includes(path.extname(file))),
+            .filter((file) => [".jpg", ".jpeg", ".png"].includes(path.extname(file))),*/
+        files: req.body.fileNames
     };
+    console.log(req.body)
     try {
         let logs: any = await processImages(req, res, workerInput, INPUT_DIR, OUTPUT_DIR);
         //console.log({"logs":logs})
