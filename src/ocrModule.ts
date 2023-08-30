@@ -19,9 +19,10 @@ const db = new PrismaClient();
 const processImages = async (req: Request, res: Response, workerInput: WorkerInput, INPUT_DIR: string, OUTPUT_DIR: string) => {
     let logs: any = [];
 
-    const logsArray = createWorker({
+    const worker = await createWorker({
         langPath: path.join(__dirname, "..", "tesseract-data"),
-    }).then(async (worker) => {
+    })
+    
         await worker.loadLanguage("eng");
         await worker.initialize("eng");
 
@@ -99,9 +100,7 @@ const processImages = async (req: Request, res: Response, workerInput: WorkerInp
         await db.$disconnect();
         return logs;
 
-    })
-
-    return logsArray;
+    
 };
 
 export default processImages

@@ -39,7 +39,7 @@ app.post('/process', expressAsyncHandler(async (req: Request, res: Response) => 
     };
     console.log(req.body)
     try {
-        let logs: any = await processImages(req, res, workerInput, INPUT_DIR, OUTPUT_DIR);
+        let logs = await processImages(req, res, workerInput, INPUT_DIR, OUTPUT_DIR);
         //console.log({"logs":logs})
         res.status(200).json({ logs });
         //console.log({"logs":logs})
