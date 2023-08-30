@@ -11,7 +11,7 @@ dotenv.config();
 
 const app: Express = express();
 app.use(express.json());
-const port = 3000;
+const port = 3005;
 const INPUT_DIR = process.env.INPUT_DIR || "./input";
 const OUTPUT_DIR = process.env.OUTPUT_DIR || "./output";
 interface WorkerInput {
