@@ -1,14 +1,14 @@
-import express, { Express, Request, Response } from 'express';
-const bodyParser = require('body-parser');
+import express, { Express, Request, Response } from "express";
+const bodyParser = require("body-parser");
 
 const cors = require("cors");
-import processImages from './ocrModule';
-import expressAsyncHandler from 'express-async-handler';
+import processImages from "./ocrModule";
+import expressAsyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 import { PrismaClient } from "@prisma/client";
-import { log } from 'console';
+import { log } from "console";
 
 dotenv.config();
 
@@ -29,14 +29,17 @@ interface WorkerInput {
 }
 const db = new PrismaClient();
 
-
-app.get('/', (req: Request, res: Response)=>{
-    res.send('Hello, this is Express + TypeScript');
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello, this is Express + TypeScript");
 });
 
 const storage = multer.diskStorage({
   destination: "./input",
-  filename: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
+  filename: (
+    req: Express.Request,
+    file: Express.Multer.File,
+    callback: (error: Error | null, filename: string) => void
+  ) => {
     const originalName = file.originalname;
     callback(null, originalName);
   },
@@ -44,26 +47,30 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/process", upload.array("files"), expressAsyncHandler(async (req, res) => {
-  const files = req.files as Express.Multer.File[]; // Files are available here
+app.post(
+  "/process",
+  upload.array("files"),
+  expressAsyncHandler(async (req, res) => {
+    const files = req.files as Express.Multer.File[]; // Files are available here
 
-  const filenames = files.map((file) => file.originalname);
-  console.log(filenames);
+    const filenames = files.map((file) => file.originalname);
+    console.log(filenames);
 
-  const workerInput: WorkerInput = {
-    inputDir: INPUT_DIR,
-    outputDir: OUTPUT_DIR,
-    files: filenames,
-  };
+    const workerInput: WorkerInput = {
+      inputDir: INPUT_DIR,
+      outputDir: OUTPUT_DIR,
+      files: filenames,
+    };
 
-  try {
-    let logs = await processImages(req, res, workerInput, INPUT_DIR, OUTPUT_DIR);
-    res.status(200).json({ logs });
-  } catch (error) {
-    res.status(500).json({ error: 'An error occurred' });
-  }
-}));
+    try {
+      let logs = await processImages(workerInput);
+      res.status(200).json({ logs });
+    } catch (error) {
+      res.status(500).json({ error: "An error occurred" });
+    }
+  })
+);
 
-app.listen(port, ()=> {
-console.log(`[Server]: I am running at https://localhost:${port}`);
+app.listen(port, () => {
+  console.log(`[Server]: I am running at https://localhost:${port}`);
 });

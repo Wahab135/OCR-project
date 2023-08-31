@@ -10,4 +10,4 @@ CREATE TABLE "Data" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Data_fileHash_key" ON "Data"("fileHash");
+CREATE UNIQUE INDEX "Data_id_key" ON "Data"("id");

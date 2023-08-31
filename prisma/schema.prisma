@@ -12,10 +12,12 @@ datasource db {
 
 model Data {
   id            Int       @id @default(autoincrement())
-  fileHash      String    @unique
+  fileHash      String
   fileName      String
   filePath      String
   extractedData String
   createdDate   DateTime?
   modifiedDate  DateTime?
+
+  @@unique([fileHash, extractedData])
 }
